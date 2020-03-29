@@ -1,3 +1,7 @@
+import { getExpenses } from "./watchMail";
+import { writeSheet } from "./spreadSheet";
+
 global.myFunction = () => {
-  Logger.log("hello");
+  const expences = getExpenses();
+  writeSheet(expences);
 };

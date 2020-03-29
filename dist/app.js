@@ -122,14 +122,97 @@ module.exports = g;
 /*!**********************!*\
   !*** ./src/index.ts ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {global.myFunction = () => {
-    Logger.log("hello");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _watchMail__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./watchMail */ "./src/watchMail.ts");
+/* harmony import */ var _spreadSheet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./spreadSheet */ "./src/spreadSheet.ts");
+
+
+global.myFunction = () => {
+    const expences = Object(_watchMail__WEBPACK_IMPORTED_MODULE_0__["getExpenses"])();
+    Object(_spreadSheet__WEBPACK_IMPORTED_MODULE_1__["writeSheet"])(expences);
 };
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./src/spreadSheet.ts":
+/*!****************************!*\
+  !*** ./src/spreadSheet.ts ***!
+  \****************************/
+/*! exports provided: writeSheet */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "writeSheet", function() { return writeSheet; });
+const writeSheet = (expences) => {
+    const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART"];
+    // const otherStores = ["AMAZON CO JP", "BIC CAMERA"];
+    const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty("SHEET_ID")).getSheetByName("accountbook");
+    const foodAmounts = [];
+    const otherAmounts = [];
+    expences.forEach(({ amount, store }) => {
+        if (foodStores.includes(store)) {
+            foodAmounts.push(amount);
+        }
+        else {
+            otherAmounts.push(amount);
+        }
+    });
+    Logger.log(foodAmounts);
+    Logger.log(otherAmounts);
+    const lastRow = sheet.getLastRow();
+    if (foodAmounts[0]) {
+        sheet.getRange(lastRow + 1, 2).setValue(`= ${foodAmounts.join(" + ")}`);
+    }
+    if (otherAmounts[0]) {
+        sheet.getRange(lastRow + 1, 4).setValue(`= ${otherAmounts.join(" + ")}`);
+    }
+    sheet.getRange(lastRow + 1, 1).setValue(new Date());
+};
+
+
+/***/ }),
+
+/***/ "./src/watchMail.ts":
+/*!**************************!*\
+  !*** ./src/watchMail.ts ***!
+  \**************************/
+/*! exports provided: getExpenses */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getExpenses", function() { return getExpenses; });
+const getExpenses = () => {
+    const tmpArray = [];
+    const regexp1 = /ご利用金額（円）\s+:\s+\d+,?\d+,?\d+/g;
+    const regexp2 = /\d+,?\d+,?\d+/g;
+    const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
+    const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
+    GmailApp.getInboxThreads().forEach((thread) => {
+        thread.getMessages().forEach((message) => {
+            if (message.isUnread() && regexp1.test(message.getBody())) {
+                tmpArray.push(message.getBody());
+            }
+        });
+    });
+    return tmpArray.map((body) => {
+        return {
+            amount: toNum(body.match(regexp1)[0].match(regexp2)[0]),
+            store: body.match(regexp3)[0].match(regexp4)[0],
+        };
+    });
+};
+const toNum = (value) => {
+    return Number(value.match(/\d+/g).join(""));
+};
+
 
 /***/ })
 
