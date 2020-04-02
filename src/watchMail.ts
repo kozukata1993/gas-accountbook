@@ -1,7 +1,4 @@
-interface Expence {
-  amount: number;
-  store: string;
-}
+import { Expence } from "./interfaces";
 
 export const getExpenses = (): Expence[] => {
   const tmpArray: string[] = [];

@@ -1,8 +1,4 @@
-interface Expence {
-  amount: number;
-  store: string;
-}
-
+import { Expence } from "./interfaces";
 export const writeSheet = (expences: Expence[]) => {
   const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART"];
   // const otherStores = ["AMAZON CO JP", "BIC CAMERA"];
