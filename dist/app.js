@@ -127,16 +127,57 @@ module.exports = g;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _watchMail__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./watchMail */ "./src/watchMail.ts");
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _mail__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mail */ "./src/mail.ts");
 /* harmony import */ var _spreadSheet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./spreadSheet */ "./src/spreadSheet.ts");
 
 
 global.myFunction = () => {
-    const expences = Object(_watchMail__WEBPACK_IMPORTED_MODULE_0__["getExpenses"])();
+    const expences = Object(_mail__WEBPACK_IMPORTED_MODULE_0__["getExpenses"])();
     Object(_spreadSheet__WEBPACK_IMPORTED_MODULE_1__["writeSheet"])(expences);
 };
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./src/mail.ts":
+/*!*********************!*\
+  !*** ./src/mail.ts ***!
+  \*********************/
+/*! exports provided: getExpenses */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getExpenses", function() { return getExpenses; });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/utils.ts");
+
+const getExpenses = () => {
+    const tmpArray = [];
+    const ids = [];
+    const regexp1 = /ご利用金額（円）\s+:\s+\d+,?\d+,?\d+/g;
+    const regexp2 = /\d+,?\d+,?\d+/g;
+    const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
+    const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
+    GmailApp.getInboxThreads().forEach((thread) => {
+        thread.getMessages().forEach((message) => {
+            if (message.getFrom() === "mail@debit.bk.mufg.jp") {
+                tmpArray.push(message.getBody());
+                ids.push(message.getId());
+            }
+        });
+    });
+    ids.forEach((id) => {
+        GmailApp.getMessageById(id).moveToTrash();
+    });
+    return tmpArray.map((body) => {
+        return {
+            amount: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["toNum"])(body.match(regexp1)[0].match(regexp2)[0]),
+            store: body.match(regexp3)[0].match(regexp4)[0],
+        };
+    });
+};
+
 
 /***/ }),
 
@@ -164,8 +205,6 @@ const writeSheet = (expences) => {
             otherAmounts.push(amount);
         }
     });
-    Logger.log(foodAmounts);
-    Logger.log(otherAmounts);
     const lastRow = sheet.getLastRow();
     if (foodAmounts[0]) {
         sheet.getRange(lastRow + 1, 2).setValue(`= ${foodAmounts.join(" + ")}`);
@@ -179,36 +218,16 @@ const writeSheet = (expences) => {
 
 /***/ }),
 
-/***/ "./src/watchMail.ts":
-/*!**************************!*\
-  !*** ./src/watchMail.ts ***!
-  \**************************/
-/*! exports provided: getExpenses */
+/***/ "./src/utils.ts":
+/*!**********************!*\
+  !*** ./src/utils.ts ***!
+  \**********************/
+/*! exports provided: toNum */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getExpenses", function() { return getExpenses; });
-const getExpenses = () => {
-    const tmpArray = [];
-    const regexp1 = /ご利用金額（円）\s+:\s+\d+,?\d+,?\d+/g;
-    const regexp2 = /\d+,?\d+,?\d+/g;
-    const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
-    const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
-    GmailApp.getInboxThreads().forEach((thread) => {
-        thread.getMessages().forEach((message) => {
-            if (message.isUnread() && regexp1.test(message.getBody())) {
-                tmpArray.push(message.getBody());
-            }
-        });
-    });
-    return tmpArray.map((body) => {
-        return {
-            amount: toNum(body.match(regexp1)[0].match(regexp2)[0]),
-            store: body.match(regexp3)[0].match(regexp4)[0],
-        };
-    });
-};
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toNum", function() { return toNum; });
 const toNum = (value) => {
     return Number(value.match(/\d+/g).join(""));
 };

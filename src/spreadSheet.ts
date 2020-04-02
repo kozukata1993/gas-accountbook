@@ -16,8 +16,6 @@ export const writeSheet = (expences: Expence[]) => {
       otherAmounts.push(amount);
     }
   });
-  Logger.log(foodAmounts);
-  Logger.log(otherAmounts);
 
   const lastRow = sheet.getLastRow();
   if (foodAmounts[0]) {

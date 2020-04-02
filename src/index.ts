@@ -1,4 +1,4 @@
-import { getExpenses } from "./watchMail";
+import { getExpenses } from "./mail";
 import { writeSheet } from "./spreadSheet";
 
 global.myFunction = () => {
