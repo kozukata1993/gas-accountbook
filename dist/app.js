@@ -1,4 +1,6 @@
 function myFunction() {
+}
+function test() {
 }/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -135,6 +137,10 @@ global.myFunction = () => {
     const expences = Object(_mail__WEBPACK_IMPORTED_MODULE_0__["getExpenses"])();
     Object(_spreadSheet__WEBPACK_IMPORTED_MODULE_1__["writeSheet"])(expences);
 };
+global.test = () => {
+    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    Logger.log(today);
+};
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
@@ -159,9 +165,11 @@ const getExpenses = () => {
     const regexp2 = /\d+,?\d+,?\d+/g;
     const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
     const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
+    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
     GmailApp.getInboxThreads().forEach((thread) => {
         thread.getMessages().forEach((message) => {
-            if (message.getFrom() === "mail@debit.bk.mufg.jp") {
+            if (message.getFrom() === "mail@debit.bk.mufg.jp" &&
+                message.getDate() > today) {
                 tmpArray.push(message.getBody());
                 ids.push(message.getId());
             }
@@ -192,7 +200,7 @@ const getExpenses = () => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "writeSheet", function() { return writeSheet; });
 const writeSheet = (expences) => {
-    const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART"];
+    const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART", "WAIZUMA-TO"];
     // const otherStores = ["AMAZON CO JP", "BIC CAMERA"];
     const sheet = SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty("SHEET_ID")).getSheetByName("accountbook");
     const foodAmounts = [];

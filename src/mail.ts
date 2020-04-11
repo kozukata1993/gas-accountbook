@@ -8,10 +8,18 @@ export const getExpenses = (): Expence[] => {
   const regexp2 = /\d+,?\d+,?\d+/g;
   const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
   const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
+  const today = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate()
+  );
 
   GmailApp.getInboxThreads().forEach((thread) => {
     thread.getMessages().forEach((message) => {
-      if (message.getFrom() === "mail@debit.bk.mufg.jp") {
+      if (
+        message.getFrom() === "mail@debit.bk.mufg.jp" &&
+        message.getDate() > today
+      ) {
         tmpArray.push(message.getBody());
         ids.push(message.getId());
       }

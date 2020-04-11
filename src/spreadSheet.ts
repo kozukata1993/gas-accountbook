@@ -1,6 +1,6 @@
 import { Expence } from "./interfaces";
 export const writeSheet = (expences: Expence[]) => {
-  const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART"];
+  const foodStores = ["SEVEN-ELEVEN JAPAN", "FAMILYMART", "WAIZUMA-TO"];
   // const otherStores = ["AMAZON CO JP", "BIC CAMERA"];
   const sheet = SpreadsheetApp.openById(
     PropertiesService.getScriptProperties().getProperty("SHEET_ID")
