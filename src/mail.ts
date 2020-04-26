@@ -7,7 +7,7 @@ export const getExpenses = (): Expence[] => {
   const regexp1 = /ご利用金額（円）\s+:\s+\d+,?\d+,?\d+/g;
   const regexp2 = /\d+,?\d+,?\d+/g;
   const regexp3 = /ご利用先\s+:\s+\w+ ?\w+-? ?\w+ ?\w+/g;
-  const regexp4 = /\w+-? ?\w+ ?\w+ ?\w+/g;
+  const regexp4 = /\w+-?\w+\s?\w+/g;
   const today = new Date(
     new Date().getFullYear(),
     new Date().getMonth(),
